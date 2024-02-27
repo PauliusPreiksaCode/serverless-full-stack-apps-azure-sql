@@ -12,4 +12,9 @@ public class GetBusDataFunction
     public async Task GetBusData(
         [TimerTrigger("*/15 * * * * *")] TimerInfo timerInfo) =>
         await _busDataManagerService.ProcessBusDataAsync();
+
+    [FunctionName("GetWeatherData")]
+    public async Task GetWeatherData(
+        [TimerTrigger("*/15 * * * * *")] TimerInfo timerInfo) =>
+        await _busDataManagerService.ProcessWeatherDataAsync();
 }

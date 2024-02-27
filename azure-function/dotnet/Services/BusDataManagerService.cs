@@ -13,6 +13,43 @@ public sealed class BusDataManagerService : IBusDataManagerService
         (_log, _client, _options) =
             (log, client, options.Value);
 
+    
+    public async Task ProcessWeatherDataAsync()
+    {
+        var city = "Kaunas";
+        var _apiKey = "2d351b25a5ec46fab0694510221411";
+        
+        string apiUrl = "http://api.weatherapi.com/v1/current.json";
+        var parameters = new Dictionary<string, string>
+        {
+            {"key", _apiKey},
+            {"q", city}
+        };
+
+        var response = await _client.GetAsync($"{apiUrl}?{await new FormUrlEncodedContent(parameters).ReadAsStringAsync()}");
+        if (response.IsSuccessStatusCode)
+        {
+            var content = await response.Content.ReadAsStringAsync();
+            var weatherData = JObject.Parse(content);
+
+            // Access the temperature and last updated time directly
+            var tempC = weatherData["current"]["temp_c"].Value<float>();
+            var lastUpdated = weatherData["current"]["last_updated"].Value<string>();
+
+            string result = $"Temperatura: {tempC}, \n Paskutinį kartą atnaujinta: {lastUpdated}";
+
+            
+            _log.LogInformation($"Weather data logged : {result}");
+            return;
+        }
+        else
+        {
+            var error = await response.Content.ReadAsStringAsync();
+            _log.LogError($"Failed to get weather data: {error}");
+            return;
+        }
+    }
+
     public async Task ProcessBusDataAsync()
     {
         // Get the real-time bus location feed

@@ -3,4 +3,5 @@
 public interface IBusDataManagerService
 {
     Task ProcessBusDataAsync();
+    Task ProcessWeatherDataAsync();
 }
